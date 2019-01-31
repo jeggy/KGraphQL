@@ -1,17 +1,6 @@
 package com.github.pgutkowski.kgraphql.integration
 
-import com.github.pgutkowski.kgraphql.Actor
-import com.github.pgutkowski.kgraphql.Director
-import com.github.pgutkowski.kgraphql.Film
-import com.github.pgutkowski.kgraphql.FilmType
-import com.github.pgutkowski.kgraphql.Id
-import com.github.pgutkowski.kgraphql.IdScalarSupport
-import com.github.pgutkowski.kgraphql.Person
-import com.github.pgutkowski.kgraphql.Scenario
-import com.github.pgutkowski.kgraphql.defaultSchema
-import com.github.pgutkowski.kgraphql.deserialize
-import com.github.pgutkowski.kgraphql.schema.DefaultSchema
-import com.github.pgutkowski.kgraphql.schema.dsl.SchemaBuilder
+import com.github.pgutkowski.kgraphql.*
 import org.junit.After
 
 
@@ -180,6 +169,30 @@ abstract class BaseSchemaTest {
             description = "create new actor"
             resolver { name : String, age : Int ->
                 val actor = Actor(name, age)
+                createdActors.add(actor)
+                actor
+            }
+        }
+        mutation("createActorWithInput") {
+            description = "create new actor"
+            resolver { input: ActorInput ->
+                val actor = Actor(input.name, input.age)
+                createdActors.add(actor)
+                actor
+            }
+        }
+        mutation("createActorWithAges") {
+            description = "create new actor"
+            resolver { name: String, ages: List<Int> ->
+                val actor = Actor(name, ages.reduce { sum, age -> sum + age })
+                createdActors.add(actor)
+                actor
+            }
+        }
+        mutation("createActorWithAgesInput") {
+            description = "create new actor"
+            resolver { input: ActorCalculateAgeInput ->
+                val actor = Actor(input.name, input.ages.reduce { sum, age -> sum + age })
                 createdActors.add(actor)
                 actor
             }
